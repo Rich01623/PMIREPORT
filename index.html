@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JCC Transport - Digital PMI Tool</title>
+    <style>
+        :root {
+            --rs-orange: #FF8C00;
+            --bg-main: #f0f4f8; /* Light gray background */
+            --card-bg: #ffffff; /* White cards */
+            --input-bg: #ffffff; /* White inputs */
+            --border: #cbd5e1; /* Light gray borders */
+            --text: #1e293b; /* Dark slate text */
+            --tab-active: #f1f5f9; /* Light active tab background */
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            font-size: 14px;
+        }
+
+        .wizard-container {
+            max-width: 1100px;
+            margin: auto;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-top: 6px solid var(--rs-orange);
+            border-radius: 4px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+
+        h1, h2, h3 { color: var(--rs-orange); margin-top: 0; text-transform: uppercase; }
+
+        /* Multi-step Logic */
+        .step-content { display: none; }
+        .step-content.active { display: block; }
+
+        /* Grid layouts */
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+
+        .field-group { display: flex; flex-direction: column; margin-bottom: 10px; }
+        .field-group label { font-size: 11px; color: #64748b; font-weight: bold; margin-bottom: 4px; text-transform: uppercase; }
+        input, select, textarea { 
+            background: var(--input-bg); 
+            border: 1px solid var(--border); 
+            color: var(--text); 
+            padding: 10px; border-radius: 3px; 
+        }
+        input:focus { border-color: var(--rs-orange); outline: none; box-shadow: 0 0 0 2px rgba(255, 140, 0, 0.2); }
+        
+        /* Auto-filled styling */
+        input[readonly] { color: var(--rs-orange); font-weight: bold; background: #f8fafc; border-color: var(--border); }
+
+        /* Tabs for Section 2 */
+        .tab-nav { display: flex; border-bottom: 2px solid var(--border); margin-bottom: 20px; overflow-x: auto; }
+        .tab-btn { 
+            padding: 12px 20px; background: none; border: none; color: #64748b; 
+            cursor: pointer; font-weight: bold; font-size: 12px; text-transform: uppercase; white-space: nowrap;
+        }
+        .tab-btn.active { color: var(--rs-orange); border-bottom: 2px solid var(--rs-orange); background: var(--tab-active); }
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; }
+
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th { background: #f8fafc; text-align: left; padding: 10px; font-size: 12px; border-bottom: 2px solid var(--border); color: #334155; }
+        td { padding: 8px; border-bottom: 1px solid #e2e8f0; font-size: 13px; }
+        .status-row { text-align: right; white-space: nowrap; }
+        .status-row label { cursor: pointer; margin-left: 8px; }
+
+        /* Navigation Buttons */
+        .nav-footer { display: flex; gap: 10px; margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border); }
+        .btn { padding: 12px 25px; border-radius: 3px; font-weight: bold; cursor: pointer; border: none; text-transform: uppercase; flex: 1; }
+        .btn-next { background: var(--rs-orange); color: #000; }
+        .btn-prev { background: #94a3b8; color: #fff; }
+        .btn-action { background: #0066cc; color: #fff; }
+
+        /* Matrix Styling */
+        .matrix-input { width: 60px; text-align: center; }
+
+        .legal-box { 
+            background: rgba(255, 140, 0, 0.05); border: 1px solid var(--rs-orange); 
+            padding: 20px; margin-top: 20px; font-size: 13px; line-height: 1.5;
+        }
+
+        /* 🖨️ HYPER-CONDENSED PRINT STYLES (FIXED GAPS) 🖨️ */
+        @media print {
+            @page { size: A4; margin: 0.5cm; }
+            
+            body { background: white; color: black; padding: 0; font-size: 9px; font-family: Arial, sans-serif; line-height: 1.15; }
+            .wizard-container { border: none; box-shadow: none; width: 100%; max-width: none; padding: 0; margin: 0; }
+            
+            .step-content, .tab-pane { display: block !important; opacity: 1 !important; margin-bottom: 5px; }
+            .nav-footer, .tab-nav, .btn { display: none !important; }
+            
+            h1 { font-size: 14px; margin: 0 0 2px 0; color: #000; }
+            h2 { font-size: 11px; margin: 4px 0 2px 0; background: #eee; padding: 3px; color: #000; border: 1px solid #000; page-break-after: avoid; }
+            h3 { font-size: 10px; margin: 4px 0 2px 0; color: #000; page-break-after: avoid; }
+            header p { font-size: 9px; margin: 0 0 5px 0; color: #000; }
+            header { margin-bottom: 5px !important; border-bottom: 2px solid #000; padding-bottom: 5px; }
+            
+            .grid-3, .grid-4 { gap: 4px; margin-bottom: 5px; }
+            .field-group { margin-bottom: 2px; page-break-inside: avoid; }
+            .field-group label { font-size: 8px; margin-bottom: 1px; color: #000; }
+            
+            input, select, textarea { 
+                border: none; border-bottom: 1px solid #000; 
+                color: black !important; background: transparent !important; 
+                padding: 1px; font-size: 9px; border-radius: 0; height: auto;
+            }
+            
+            table { margin-bottom: 5px; line-height: 1; page-break-inside: auto; }
+            tr { page-break-inside: avoid; page-break-after: auto; }
+            thead { display: table-header-group; }
+            th { background: #e0e0e0; color: black; border: 1px solid #000; padding: 2px; font-size: 8px; }
+            td { border: 1px solid #999; padding: 2px; font-size: 8px; }
+            
+            .status-row { text-align: left; }
+            .status-row label { margin-left: 2px; font-size: 8px; display: inline-flex; align-items: center; gap: 2px; }
+            .status-row input[type="radio"] { appearance: auto; margin: 0; width: 8px; height: 8px; }
+            
+            #tabInside { float: left; width: 49%; }
+            #tabEngine { float: right; width: 49%; }
+            #tabExternal { clear: both; width: 100%; padding-top: 5px; }
+            
+            .matrix-input { width: 30px; text-align: center; }
+            
+            .legal-box { padding: 5px; margin-top: 5px; border: 1px solid #000; background: transparent; font-size: 8px; page-break-inside: avoid; }
+            .legal-box p { margin: 2px 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="wizard-container">
+    <header style="margin-bottom: 30px;">
+        <h1>JCC Transport Services</h1>
+        <p style="color:#666; margin:0;">PMI Reporting Tool</p>
+    </header>
+
+    <form id="pmiWizard">
+        <div id="step1" class="step-content active">
+            <h2>Section 1: Vehicle & Operator Details</h2>
+            
+            <div class="grid-3">
+                <div class="field-group"><label>Company Name</label><input type="text"></div>
+                <div class="field-group"><label>Email Address</label><input type="email" value="chamberlainrakhee@sky.com"></div>
+                <div class="field-group"><label>Mobile No.</label><input type="text" value="07806609199"></div>
+            </div>
+
+            <div class="grid-4">
+                <div class="field-group"><label>Registration No.</label><input type="text"></div>
+                <div class="field-group"><label>Make</label><input type="text"></div>
+                <div class="field-group"><label>Model</label><input type="text"></div>
+                <div class="field-group"><label>Fleet No.</label><input type="text"></div>
+            </div>
+
+            <div class="grid-4">
+                <div class="field-group"><label>Body Type</label><input type="text"></div>
+                <div class="field-group"><label>Odometer Reading</label><input type="text"></div>
+                <div class="field-group"><label>Chassis No.</label><input type="text"></div>
+                <div class="field-group"><label>ISO Week No.</label><input type="number" id="isoWeek" readonly title="Automatically Calculated"></div>
+            </div>
+
+            <div class="grid-4">
+                <div class="field-group"><label>O-Licence Expiry</label><input type="text"></div>
+                <div class="field-group"><label>Tacho Calibration Date</label><input type="text"></div>
+                <div class="field-group"><label>Last 2 Year Test Date</label><input type="text"></div>
+                <div class="field-group"><label>Inspection Date</label><input type="text"></div>
+            </div>
+        </div>
+
+        <div id="step2" class="step-content">
+            <h2>Section 2: Safety Inspection</h2>
+            
+            <div class="tab-nav">
+                <button type="button" class="tab-btn active" onclick="openTab(event, 'tabInside')">Inside Cab</button>
+                <button type="button" class="tab-btn" onclick="openTab(event, 'tabEngine')">Engine Compartment</button>
+                <button type="button" class="tab-btn" onclick="openTab(event, 'tabExternal')">External/Chassis</button>
+                <button type="button" class="tab-btn" onclick="openTab(event, 'tabBrakesTyres')">Brakes & Tyres</button>
+            </div>
+
+            <div id="tabInside" class="tab-pane active">
+                <table>
+                    <thead><tr><th>Item Inspected</th><th>IM No</th><th>Status (✔/X/NA)</th></tr></thead>
+                    <tbody id="insideCabItems"></tbody>
+                </table>
+            </div>
+
+            <div id="tabEngine" class="tab-pane">
+                <table>
+                    <thead><tr><th>Item Inspected</th><th>IM No</th><th>Status (✔/X/NA)</th></tr></thead>
+                    <tbody id="engineItems"></tbody>
+                </table>
+            </div>
+
+            <div id="tabExternal" class="tab-pane">
+                <table>
+                    <thead><tr><th>Item Inspected</th><th>IM No</th><th>Status (✔/X/NA)</th></tr></thead>
+                    <tbody id="externalItems"></tbody>
+                </table>
+            </div>
+
+            <div id="tabBrakesTyres" class="tab-pane">
+                <h3>Braking Systems Checks</h3>
+                <table style="margin-bottom: 20px;">
+                    <thead><tr><th>Item Inspected</th><th>IM No</th><th>Status (✔/X/NA)</th></tr></thead>
+                    <tbody id="brakesItems"></tbody>
+                </table>
+
+                <h3>Tyre Condition & Brake Wear Measurements</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Axle</th>
+                            <th>N/S Tread (mm)</th>
+                            <th>N/S PSI</th>
+                            <th>N/S Brake Wear</th>
+                            <th>O/S Tread (mm)</th>
+                            <th>O/S PSI</th>
+                            <th>O/S Brake Wear</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Axle 1</td>
+                            <td><input type="text" class="matrix-input"></td>
+                            <td><input type="text" class="matrix-input"></td>
+                            <td><input type="text" class="matrix-input" placeholder="mm/%"></td>
+                            <td><input type="text" class="matrix-input"></td>
+                            <td><input type="text" class="matrix-input"></td>
+                            <td><input type="text" class="matrix-input" placeholder="mm/%"></td>
+                        </tr>
+                        <tr>
+                            <td>Axle 2</td>
+                            <td><input type="text" class="matrix-input"></td>
+                            <td><input type="text" class="matrix-input"></td>
+                            <td><input type="text" class="matrix-input" placeholder="mm/%"></td>
+                            <td><input type="text" class="matrix-input"></td>
+                            <td><input type="text" class="matrix-input"></td>
+                            <td><input type="text" class="matrix-input" placeholder="mm/%"></td>
+                        </tr>
+                        <tr>
+                            <td>Axle 3</td>
+                            <td><input type="text" class="matrix-input"></td>
+                            <td><input type="text" class="matrix-input"></td>
+                            <td><input type="text" class="matrix-input" placeholder="mm/%"></td>
+                            <td><input type="text" class="matrix-input"></td>
+                            <td><input type="text" class="matrix-input"></td>
+                            <td><input type="text" class="matrix-input" placeholder="mm/%"></td>
+                        </tr>
+                        <tr>
+                            <td>Axle 4</td>
+                            <td><input type="text" class="matrix-input"></td>
+                            <td><input type="text" class="matrix-input"></td>
+                            <td><input type="text" class="matrix-input" placeholder="mm/%"></td>
+                            <td><input type="text" class="matrix-input"></td>
+                            <td><input type="text" class="matrix-input"></td>
+                            <td><input type="text" class="matrix-input" placeholder="mm/%"></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Brake Efficiency Assessment</h3>
+                <div class="grid-3">
+                    <div class="field-group"><label>Service Brake %</label><input type="text"></div>
+                    <div class="field-group"><label>Secondary Brake %</label><input type="text"></div>
+                    <div class="field-group"><label>Parking Brake %</label><input type="text"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="step3" class="step-content">
+            <h2>Section 3: Finalize & Sign</h2>
+            
+            <h3>Part 2: Rectification</h3>
+            <p style="font-size: 11px; color: #64748b;">Any items marked 'X' (Fail) in Section 2 will automatically appear below.</p>
+            <table>
+                <thead><tr><th>Fault Details</th><th>IM No</th><th>Action Taken</th><th>By</th></tr></thead>
+                <tbody id="rectificationBody">
+                    </tbody>
+            </table>
+
+            <div class="legal-box">
+                <p><strong>Operator Declaration:</strong> I consider the above defects have been rectified satisfactorily and the vehicle is now in a safe and roadworthy condition. IT IS ALWAYS THE RESPONSIBILITY OF THE OPERATOR THAT THE VEHICLE IS IN A ROADWORTHY CONDITION BEFORE BEING USED ON THE ROAD.</p>
+                
+                <div class="grid-3">
+                    <div class="field-group"><label>Inspector Signature</label><input type="text"></div>
+                    <div class="field-group"><label>Position</label><input type="text"></div>
+                    <div class="field-group"><label>Date Completed</label><input type="text"></div>
+                </div>
+                <div class="field-group" style="width: 200px; margin-top: 10px;">
+                    <label>Digital Tacho Downloaded?</label>
+                    <select><option value=""></option><option>YES</option><option>NO</option></select>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-footer">
+            <button type="button" class="btn btn-prev" id="prevBtn" onclick="changeStep(-1)" style="display:none;">Previous</button>
+            <button type="button" class="btn btn-action" id="genBtn" onclick="window.print()" style="display:none;">Generate Report</button>
+            <button type="button" class="btn btn-action" id="blankBtn" onclick="printBlankForm()" style="display:none; background:#64748b;">Print Blank</button>
+            <button type="button" class="btn btn-next" id="nextBtn" onclick="changeStep(1)">Next Section</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    let currentStep = 1;
+
+    // --- ISO WEEK AUTO-CALCULATION ---
+    function setISOWeek() {
+        const today = new Date();
+        const d = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+        const dayNum = d.getUTCDay() || 7;
+        d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+        const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+        const isoWeek = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+        
+        const weekInput = document.getElementById('isoWeek');
+        weekInput.value = isoWeek;
+        // Setting the attribute ensures it isn't cleared if form.reset() is called
+        weekInput.setAttribute('value', isoWeek); 
+    }
+    setISOWeek(); // Run on load
+
+    function changeStep(n) {
+        document.getElementById(`step${currentStep}`).classList.remove('active');
+        currentStep += n;
+        document.getElementById(`step${currentStep}`).classList.add('active');
+
+        // Toggle buttons
+        document.getElementById('prevBtn').style.display = currentStep === 1 ? 'none' : 'block';
+        document.getElementById('nextBtn').style.display = currentStep === 3 ? 'none' : 'block';
+        document.getElementById('genBtn').style.display = currentStep === 3 ? 'block' : 'none';
+        document.getElementById('blankBtn').style.display = currentStep === 3 ? 'block' : 'none';
+    }
+
+    function openTab(evt, tabName) {
+        let panes = document.getElementsByClassName("tab-pane");
+        for (let pane of panes) pane.classList.remove("active");
+        
+        let btns = document.getElementsByClassName("tab-btn");
+        for (let btn of btns) btn.classList.remove("active");
+
+        document.getElementById(tabName).classList.add("active");
+        evt.currentTarget.classList.add("active");
+    }
+
+    function printBlankForm() {
+        document.getElementById('pmiWizard').reset();
+        document.getElementById('rectificationBody').innerHTML = ''; // Clear auto-filled faults
+        window.print();
+    }
+
+    // --- SMART RECTIFICATION LOGIC ---
+    document.getElementById('pmiWizard').addEventListener('change', function(e) {
+        // Only trigger if a radio button was changed
+        if (e.target.type === 'radio') {
+            const radioName = e.target.name;
+            const value = e.target.value;
+            const rectBody = document.getElementById('rectificationBody');
+            
+            // Look for an existing row for this specific item
+            const existingRow = document.querySelector(`tr[data-source="${radioName}"]`);
+
+            if (value === 'F') {
+                // If marked 'X' (Fail) and row doesn't exist, create it
+                if (!existingRow) {
+                    const parentRow = e.target.closest('tr');
+                    const itemName = parentRow.cells[0].innerText;
+                    const imNo = parentRow.cells[1].innerText;
+
+                    const newRow = document.createElement('tr');
+                    newRow.setAttribute('data-source', radioName);
+                    newRow.innerHTML = `
+                        <td><input type="text" style="width:100%" value="${itemName}" readonly title="Auto-filled from Section 2"></td>
+                        <td><input type="text" style="width:50px" value="${imNo}" readonly title="Auto-filled"></td>
+                        <td><input type="text" style="width:100%" placeholder="Action taken..."></td>
+                        <td><input type="text" style="width:80px" placeholder="Initials"></td>
+                    `;
+                    rectBody.appendChild(newRow);
+                }
+            } else {
+                // If changed to Pass or N/A, delete the row from rectification
+                if (existingRow) {
+                    existingRow.remove();
+                }
+            }
+        }
+    });
+
+    // Comprehensive Array Extraction
+    const items = {
+        inside: [
+            ["DFT plate condition details", "-"], ["Speed limiter plate condition details", "33"],
+            ["Seat belts and supplementary restraint systems - condition", "3"], ["Cab floor and steps", "17"],
+            ["Seats driver seat all adjustments fully functional", "18"], ["Other seats and crew amenities", "-"],
+            ["Mirrors (internal)", "22"], ["View to front", "23"], ["Condition of glass (screen/windows)", "23"],
+            ["Screen wipers and washers", "25"], ["Speedometer/tachograph - operation - seals - plaque detail", "26"],
+            ["Engine tachometer", "-"], ["Audible warning - horn", "27"], ["Driving controls", "28"],
+            ["Steering wheel - free play", "30"], ["Steering wheel security condition - dust covers", "30"],
+            ["Steering column", "30"], ["Anti-theft locks", "-"], ["Pressure/vacuum - warning", "34"],
+            ["Pressure/vacuum - build up", "34"], ["Other gauges - warning devices", "-"],
+            ["Hand lever controlling mechanical & electronic park brake", "36"], ["Service brake pedal", "37"],
+            ["Service brake-ABS/ESP/ESC/EBS/warning lights (MIL) malfunction indicator lights", "38"],
+            ["Hand operated brake control valves.", "39"], ["Electrical wiring/equipment/switches", "42"],
+            ["Front fog and aux lamp switches", "-"], ["Panel/interior lamps and switches", "-"],
+            ["Cab heater/demister/air conditioning", "-"]
+        ],
+        engine: [
+            ["Engine & Transmission mountings", "43"], ["Oil leaks", "44"], ["Fuel tanks and systems", "45"],
+            ["Exhaust Systems and Nuisance", "46"], ["Exhaust brake", "-"], ["Radiator mounting", "-"],
+            ["Cooling system", "-"], ["Fan, generator, aux belts", "-"], ["Fuel pump linkage seals and EDC equipment", "-"],
+            ["Speed limiter-condition-seals-linkage", "33"], ["Injectors, pipes, filters", "-"],
+            ["Air intake system turbocharger intercooler and filters", "-"], ["Air compressor - exhauster drive belts (if applicable)", "59"]
+        ],
+        external: [
+            ["Bumper (front)", "9"], ["Condition of wings/spray suppression (front)", "14"],
+            ["Cab panels and trim, heated mirrors if fitted", "-"], ["Cab security including tilt warning", "15"],
+            ["Cab doors including hinges, locks", "16"], ["Mirrors and indirect vision devices (external)", "22"],
+            ["Front lamps (side lamps) and outline markers", "63"], ["Headlamps operation-aim-adjustment mechanism", "67"],
+            ["Front fog and spot lamps, dim/dip device and operational main beam warning light", "-"],
+            ["Road wheels and hubs", "6"], ["Sideguards and rear underrun guards", "9"],
+            ["Spare wheel carrier (and spare wheel)", "10"], ["Vehicle to trailer coupling", "11/12"],
+            ["Condition of wings/spray suppression (rear)", "14"], ["Security/condition of body", "19/20"],
+            ["Demountable bodies - chassis mounted equipment", "-"], ["Security of body, containers and crane support legs", "19"],
+            ["Other ancillary equipment", "-"], ["Chassis condition", "41"], ["Electrical wiring equipment including batteries", "42"],
+            ["Electrical connections for trailer", "42"], ["Shock absorbers", "48"], ["Suspension pins and bushes - condition", "48"],
+            ["Suspension units, linkages & dust covers-condition", "48"], ["Spring units, dust covers, linkages and sub-frames - security", "48"],
+            ["Wheel bearings and seals (rear)", "53"], ["Stub axle and wheel bearings", "54"], ["Steering mechanism Lock function", "-"],
+            ["Steering alignment", "-"], ["Axle alignment", "-"], ["Clutch operation", "-"], ["Steering gear and dust covers", "54"],
+            ["Power steering and fluid level - MIL", "54"], ["Gearbox and bell housing", "57"], ["Changing speed mechanism", "-"],
+            ["Power take-off", "-"], ["Final drive", "57"], ["2-Speed shift mechanism", "-"], ["Differential lock-traction control", "-"],
+            ["Load transfer/axle lift device", "-"], ["Transmission drive line mountings dust covers", "57"],
+            ["Rear marking and conspicuity markings", "62"], ["Rear lamps, outline markers and number plate lamp", "63"],
+            ["Rear fog lamps, including warning device", "63"], ["Reflectors (side and rear)", "62"],
+            ["Direction/hazard indicators including warning device", "66"], ["Side marker lamps", "63"], ["Stop lamps", "63"],
+            ["Reversing lamps", "-"], ["Other lamps", "63"], ["Licences", "1"], ["Legal writing", "74"],
+            ["Position lamps, headlamps and warning device", "63"], ["Paintwork and livery condition", "-"],
+            ["Other dangerous defects", "-"], ["SMOKE EMISSION", "5"], ["Registration plates secure, complete and legible", "-"],
+            ["Engine MIL inoperative or indicating a malfunction", "5"]
+        ],
+        brakes: [
+            ["Electronic braking system/electronic stability control system operation/warning", "38"],
+            ["Hydraulic fluid level", "59"], ["Mechanical brake components", "59"], ["Brake drums and linings/disc and pads", "59"],
+            ["Brake actuators and adjusters - dust covers", "59"], ["Brake systems and components", "59"],
+            ["Trailer coupling, hoses and function of self sealing valves", "59"], ["Load sensing/anti-lock system", "59"],
+            ["Air brake anti-freeze device", "-"], ["Anti-lock device operation warning", "38"],
+            ["Operation of supply dump valve", "-"], ["Operation of multi-circuit protection", "-"],
+            ["Additional braking devices", "58"], ["Condition of tyres", "8"], ["Size and type of tyres, Drive axle tyres comply", "7"],
+            ["With calibration plague", "26"]
+        ]
+    };
+
+    function renderItems(data, containerId) {
+        const container = document.getElementById(containerId);
+        data.forEach((item, idx) => {
+            const row = `<tr>
+                <td>${item[0]}</td>
+                <td>${item[1]}</td>
+                <td class="status-row">
+                    <label><input type="radio" name="${containerId}_${idx}" value="P"> ✔</label>
+                    <label><input type="radio" name="${containerId}_${idx}" value="F"> X</label>
+                    <label><input type="radio" name="${containerId}_${idx}" value="NA"> N/A</label>
+                </td>
+            </tr>`;
+            container.innerHTML += row;
+        });
+    }
+
+    renderItems(items.inside, 'insideCabItems');
+    renderItems(items.engine, 'engineItems');
+    renderItems(items.external, 'externalItems');
+    renderItems(items.brakes, 'brakesItems');
+</script>
+
+</body>
+</html>
