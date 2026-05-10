@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JCC Transport - Digital PMI Tool</title>
+    <title>JCC Transport - Digital Compliance Suite</title>
     <style>
         :root {
             --rs-orange: #FF8C00;
-            --bg-main: #f0f4f8; /* Light gray background */
-            --card-bg: #ffffff; /* White cards */
-            --input-bg: #ffffff; /* White inputs */
-            --border: #cbd5e1; /* Light gray borders */
-            --text: #1e293b; /* Dark slate text */
-            --tab-active: #f1f5f9; /* Light active tab background */
+            --bg-main: #f0f4f8; 
+            --card-bg: #ffffff; 
+            --input-bg: #ffffff; 
+            --border: #cbd5e1; 
+            --text: #1e293b; 
+            --tab-active: #f1f5f9; 
         }
 
         body {
@@ -24,6 +24,53 @@
             font-size: 14px;
         }
 
+        /* --- HOME DASHBOARD STYLES --- */
+        #homeMenu {
+            max-width: 900px;
+            margin: 50px auto;
+            text-align: center;
+        }
+        .dashboard-cards {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+        .app-card {
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-top: 8px solid var(--rs-orange);
+            border-radius: 8px;
+            padding: 40px;
+            width: 300px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+        .app-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--rs-orange);
+            box-shadow: 0 15px 35px rgba(255, 140, 0, 0.15);
+        }
+        .app-card h2 { font-size: 24px; margin-bottom: 10px; color: var(--text); }
+        .app-card p { color: #64748b; font-size: 14px; }
+        
+        .top-nav {
+            max-width: 1100px;
+            margin: 0 auto 10px auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .btn-home {
+            background: #e2e8f0; color: #334155; border: none; padding: 8px 15px;
+            border-radius: 4px; cursor: pointer; font-weight: bold; text-transform: uppercase;
+            font-size: 12px;
+        }
+        .btn-home:hover { background: #cbd5e1; }
+
+        /* --- APP WIZARD STYLES --- */
         .wizard-container {
             max-width: 1100px;
             margin: auto;
@@ -37,11 +84,9 @@
 
         h1, h2, h3 { color: var(--rs-orange); margin-top: 0; text-transform: uppercase; }
 
-        /* Multi-step Logic */
         .step-content { display: none; }
         .step-content.active { display: block; }
 
-        /* Grid layouts */
         .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
         .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
 
@@ -55,10 +100,8 @@
         }
         input:focus { border-color: var(--rs-orange); outline: none; box-shadow: 0 0 0 2px rgba(255, 140, 0, 0.2); }
         
-        /* Auto-filled styling */
         input[readonly] { color: var(--rs-orange); font-weight: bold; background: #f8fafc; border-color: var(--border); }
 
-        /* Tabs for Section 2 */
         .tab-nav { display: flex; border-bottom: 2px solid var(--border); margin-bottom: 20px; overflow-x: auto; }
         .tab-btn { 
             padding: 12px 20px; background: none; border: none; color: #64748b; 
@@ -68,37 +111,36 @@
         .tab-pane { display: none; }
         .tab-pane.active { display: block; }
 
-        /* Tables */
         table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
         th { background: #f8fafc; text-align: left; padding: 10px; font-size: 12px; border-bottom: 2px solid var(--border); color: #334155; }
         td { padding: 8px; border-bottom: 1px solid #e2e8f0; font-size: 13px; }
         .status-row { text-align: right; white-space: nowrap; }
         .status-row label { cursor: pointer; margin-left: 8px; }
 
-        /* Navigation Buttons */
         .nav-footer { display: flex; gap: 10px; margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border); }
         .btn { padding: 12px 25px; border-radius: 3px; font-weight: bold; cursor: pointer; border: none; text-transform: uppercase; flex: 1; }
         .btn-next { background: var(--rs-orange); color: #000; }
         .btn-prev { background: #94a3b8; color: #fff; }
         .btn-action { background: #0066cc; color: #fff; }
 
-        /* Matrix Styling */
-        .matrix-input { width: 60px; text-align: center; }
+        .matrix-input { width: 45px; text-align: center; }
 
         .legal-box { 
             background: rgba(255, 140, 0, 0.05); border: 1px solid var(--rs-orange); 
             padding: 20px; margin-top: 20px; font-size: 13px; line-height: 1.5;
         }
 
-        /* 🖨️ HYPER-CONDENSED PRINT STYLES (FIXED GAPS) 🖨️ */
+        /* 🖨️ HYPER-CONDENSED PRINT STYLES 🖨️ */
         @media print {
             @page { size: A4; margin: 0.5cm; }
             
             body { background: white; color: black; padding: 0; font-size: 9px; font-family: Arial, sans-serif; line-height: 1.15; }
-            .wizard-container { border: none; box-shadow: none; width: 100%; max-width: none; padding: 0; margin: 0; }
             
+            /* Hide Dashboard & Nav during print */
+            #homeMenu, .top-nav, .nav-footer, .tab-nav, .btn { display: none !important; }
+            
+            .wizard-container { border: none; box-shadow: none; width: 100%; max-width: none; padding: 0; margin: 0; }
             .step-content, .tab-pane { display: block !important; opacity: 1 !important; margin-bottom: 5px; }
-            .nav-footer, .tab-nav, .btn { display: none !important; }
             
             h1 { font-size: 14px; margin: 0 0 2px 0; color: #000; }
             h2 { font-size: 11px; margin: 4px 0 2px 0; background: #eee; padding: 3px; color: #000; border: 1px solid #000; page-break-after: avoid; }
@@ -126,12 +168,17 @@
             .status-row label { margin-left: 2px; font-size: 8px; display: inline-flex; align-items: center; gap: 2px; }
             .status-row input[type="radio"] { appearance: auto; margin: 0; width: 8px; height: 8px; }
             
+            /* Vehicle Print Layout */
             #tabInside { float: left; width: 49%; }
             #tabEngine { float: right; width: 49%; }
             #tabExternal { clear: both; width: 100%; padding-top: 5px; }
             
-            .matrix-input { width: 30px; text-align: center; }
+            /* Trailer Print Layout */
+            #t_tabBrakesAir { float: left; width: 49%; }
+            #t_tabLights { float: right; width: 49%; }
+            #t_tabChassis, #t_tabSuspension { clear: both; width: 100%; padding-top: 5px; }
             
+            .matrix-input { width: 25px; text-align: center; }
             .legal-box { padding: 5px; margin-top: 5px; border: 1px solid #000; background: transparent; font-size: 8px; page-break-inside: avoid; }
             .legal-box p { margin: 2px 0; }
         }
@@ -139,181 +186,379 @@
 </head>
 <body>
 
-<div class="wizard-container">
-    <header style="margin-bottom: 30px;">
-        <h1>JCC Transport Services</h1>
-        <p style="color:#666; margin:0;">PMI Reporting Tool</p>
-    </header>
-
-    <form id="pmiWizard">
-        <div id="step1" class="step-content active">
-            <h2>Section 1: Vehicle & Operator Details</h2>
-            
-            <div class="grid-3">
-                <div class="field-group"><label>Company Name</label><input type="text"></div>
-                <div class="field-group"><label>Email Address</label><input type="email" value="chamberlainrakhee@sky.com"></div>
-                <div class="field-group"><label>Mobile No.</label><input type="text" value="07806609199"></div>
-            </div>
-
-            <div class="grid-4">
-                <div class="field-group"><label>Registration No.</label><input type="text"></div>
-                <div class="field-group"><label>Make</label><input type="text"></div>
-                <div class="field-group"><label>Model</label><input type="text"></div>
-                <div class="field-group"><label>Fleet No.</label><input type="text"></div>
-            </div>
-
-            <div class="grid-4">
-                <div class="field-group"><label>Body Type</label><input type="text"></div>
-                <div class="field-group"><label>Odometer Reading</label><input type="text"></div>
-                <div class="field-group"><label>Chassis No.</label><input type="text"></div>
-                <div class="field-group"><label>ISO Week No.</label><input type="number" id="isoWeek" readonly title="Automatically Calculated"></div>
-            </div>
-
-            <div class="grid-4">
-                <div class="field-group"><label>O-Licence Expiry</label><input type="text"></div>
-                <div class="field-group"><label>Tacho Calibration Date</label><input type="text"></div>
-                <div class="field-group"><label>Last 2 Year Test Date</label><input type="text"></div>
-                <div class="field-group"><label>Inspection Date</label><input type="text"></div>
-            </div>
+<div id="homeMenu">
+    <h1>JCC Transport Services</h1>
+    <p style="color:#64748b; font-size: 16px;">Digital Compliance & Maintenance Suite</p>
+    
+    <div class="dashboard-cards">
+        <div class="app-card" onclick="openApp('vehicleApp')">
+            <h2 style="color:var(--text);">🚛 Vehicle PMI</h2>
+            <p>Safety Inspection & Maintenance Record for Powered Vehicles.</p>
         </div>
+        
+        <div class="app-card" onclick="openApp('trailerApp')">
+            <h2 style="color:var(--text);">🔗 Trailer PMI</h2>
+            <p>Safety Inspection & Maintenance Record for Trailers.</p>
+        </div>
+    </div>
+</div>
 
-        <div id="step2" class="step-content">
-            <h2>Section 2: Safety Inspection</h2>
-            
-            <div class="tab-nav">
-                <button type="button" class="tab-btn active" onclick="openTab(event, 'tabInside')">Inside Cab</button>
-                <button type="button" class="tab-btn" onclick="openTab(event, 'tabEngine')">Engine Compartment</button>
-                <button type="button" class="tab-btn" onclick="openTab(event, 'tabExternal')">External/Chassis</button>
-                <button type="button" class="tab-btn" onclick="openTab(event, 'tabBrakesTyres')">Brakes & Tyres</button>
-            </div>
 
-            <div id="tabInside" class="tab-pane active">
-                <table>
-                    <thead><tr><th>Item Inspected</th><th>IM No</th><th>Status (✔/X/NA)</th></tr></thead>
-                    <tbody id="insideCabItems"></tbody>
-                </table>
-            </div>
+<div id="vehicleApp" style="display: none;">
+    <div class="top-nav">
+        <button class="btn-home" onclick="openHome()">← Back to Dashboard</button>
+    </div>
 
-            <div id="tabEngine" class="tab-pane">
-                <table>
-                    <thead><tr><th>Item Inspected</th><th>IM No</th><th>Status (✔/X/NA)</th></tr></thead>
-                    <tbody id="engineItems"></tbody>
-                </table>
-            </div>
+    <div class="wizard-container">
+        <header style="margin-bottom: 30px;">
+            <h1>JCC Transport Services</h1>
+            <p style="color:#666; margin:0;">Vehicle PMI Reporting Tool | VAT: 255979153</p>
+        </header>
 
-            <div id="tabExternal" class="tab-pane">
-                <table>
-                    <thead><tr><th>Item Inspected</th><th>IM No</th><th>Status (✔/X/NA)</th></tr></thead>
-                    <tbody id="externalItems"></tbody>
-                </table>
-            </div>
-
-            <div id="tabBrakesTyres" class="tab-pane">
-                <h3>Braking Systems Checks</h3>
-                <table style="margin-bottom: 20px;">
-                    <thead><tr><th>Item Inspected</th><th>IM No</th><th>Status (✔/X/NA)</th></tr></thead>
-                    <tbody id="brakesItems"></tbody>
-                </table>
-
-                <h3>Tyre Condition & Brake Wear Measurements</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Axle</th>
-                            <th>N/S Tread (mm)</th>
-                            <th>N/S PSI</th>
-                            <th>N/S Brake Wear</th>
-                            <th>O/S Tread (mm)</th>
-                            <th>O/S PSI</th>
-                            <th>O/S Brake Wear</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Axle 1</td>
-                            <td><input type="text" class="matrix-input"></td>
-                            <td><input type="text" class="matrix-input"></td>
-                            <td><input type="text" class="matrix-input" placeholder="mm/%"></td>
-                            <td><input type="text" class="matrix-input"></td>
-                            <td><input type="text" class="matrix-input"></td>
-                            <td><input type="text" class="matrix-input" placeholder="mm/%"></td>
-                        </tr>
-                        <tr>
-                            <td>Axle 2</td>
-                            <td><input type="text" class="matrix-input"></td>
-                            <td><input type="text" class="matrix-input"></td>
-                            <td><input type="text" class="matrix-input" placeholder="mm/%"></td>
-                            <td><input type="text" class="matrix-input"></td>
-                            <td><input type="text" class="matrix-input"></td>
-                            <td><input type="text" class="matrix-input" placeholder="mm/%"></td>
-                        </tr>
-                        <tr>
-                            <td>Axle 3</td>
-                            <td><input type="text" class="matrix-input"></td>
-                            <td><input type="text" class="matrix-input"></td>
-                            <td><input type="text" class="matrix-input" placeholder="mm/%"></td>
-                            <td><input type="text" class="matrix-input"></td>
-                            <td><input type="text" class="matrix-input"></td>
-                            <td><input type="text" class="matrix-input" placeholder="mm/%"></td>
-                        </tr>
-                        <tr>
-                            <td>Axle 4</td>
-                            <td><input type="text" class="matrix-input"></td>
-                            <td><input type="text" class="matrix-input"></td>
-                            <td><input type="text" class="matrix-input" placeholder="mm/%"></td>
-                            <td><input type="text" class="matrix-input"></td>
-                            <td><input type="text" class="matrix-input"></td>
-                            <td><input type="text" class="matrix-input" placeholder="mm/%"></td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <h3>Brake Efficiency Assessment</h3>
+        <form id="vehicleWizard">
+            <div id="v_step1" class="step-content active">
+                <h2>Section 1: Vehicle & Operator Details</h2>
                 <div class="grid-3">
-                    <div class="field-group"><label>Service Brake %</label><input type="text"></div>
-                    <div class="field-group"><label>Secondary Brake %</label><input type="text"></div>
-                    <div class="field-group"><label>Parking Brake %</label><input type="text"></div>
+                    <div class="field-group"><label>Company Name</label><input type="text"></div>
+                    <div class="field-group"><label>Email Address</label><input type="email" value="chamberlainrakhee@sky.com"></div>
+                    <div class="field-group"><label>Mobile No.</label><input type="text" value="07806609199"></div>
+                </div>
+                <div class="grid-4">
+                    <div class="field-group"><label>Registration No.</label><input type="text"></div>
+                    <div class="field-group"><label>Make</label><input type="text"></div>
+                    <div class="field-group"><label>Model</label><input type="text"></div>
+                    <div class="field-group"><label>Fleet No.</label><input type="text"></div>
+                </div>
+                <div class="grid-4">
+                    <div class="field-group"><label>Body Type</label><input type="text"></div>
+                    <div class="field-group"><label>Odometer Reading</label><input type="text"></div>
+                    <div class="field-group"><label>Chassis No.</label><input type="text"></div>
+                    <div class="field-group"><label>ISO Week No.</label><input type="number" id="v_isoWeek" readonly title="Automatically Calculated"></div>
+                </div>
+                <div class="grid-4">
+                    <div class="field-group"><label>O-Licence Expiry</label><input type="text"></div>
+                    <div class="field-group"><label>Tacho Calibration Date</label><input type="text"></div>
+                    <div class="field-group"><label>Last 2 Year Test Date</label><input type="text"></div>
+                    <div class="field-group"><label>Inspection Date</label><input type="text"></div>
                 </div>
             </div>
-        </div>
 
-        <div id="step3" class="step-content">
-            <h2>Section 3: Finalize & Sign</h2>
-            
-            <h3>Part 2: Rectification</h3>
-            <p style="font-size: 11px; color: #64748b;">Any items marked 'X' (Fail) in Section 2 will automatically appear below.</p>
-            <table>
-                <thead><tr><th>Fault Details</th><th>IM No</th><th>Action Taken</th><th>By</th></tr></thead>
-                <tbody id="rectificationBody">
-                    </tbody>
-            </table>
+            <div id="v_step2" class="step-content">
+                <h2>Section 2: Safety Inspection</h2>
+                <div class="tab-nav">
+                    <button type="button" class="tab-btn active" onclick="openVehicleTab(event, 'tabInside')">Inside Cab</button>
+                    <button type="button" class="tab-btn" onclick="openVehicleTab(event, 'tabEngine')">Engine Compartment</button>
+                    <button type="button" class="tab-btn" onclick="openVehicleTab(event, 'tabExternal')">External/Chassis</button>
+                    <button type="button" class="tab-btn" onclick="openVehicleTab(event, 'tabBrakesTyres')">Brakes & Tyres</button>
+                </div>
 
-            <div class="legal-box">
-                <p><strong>Operator Declaration:</strong> I consider the above defects have been rectified satisfactorily and the vehicle is now in a safe and roadworthy condition. IT IS ALWAYS THE RESPONSIBILITY OF THE OPERATOR THAT THE VEHICLE IS IN A ROADWORTHY CONDITION BEFORE BEING USED ON THE ROAD.</p>
+                <div id="tabInside" class="tab-pane active"><table><thead><tr><th>Item Inspected</th><th>IM No</th><th>Status (✔/X/NA)</th></tr></thead><tbody id="v_insideCabItems"></tbody></table></div>
+                <div id="tabEngine" class="tab-pane"><table><thead><tr><th>Item Inspected</th><th>IM No</th><th>Status (✔/X/NA)</th></tr></thead><tbody id="v_engineItems"></tbody></table></div>
+                <div id="tabExternal" class="tab-pane"><table><thead><tr><th>Item Inspected</th><th>IM No</th><th>Status (✔/X/NA)</th></tr></thead><tbody id="v_externalItems"></tbody></table></div>
+
+                <div id="tabBrakesTyres" class="tab-pane">
+                    <h3>Braking Systems Checks</h3>
+                    <table style="margin-bottom: 20px;"><thead><tr><th>Item Inspected</th><th>IM No</th><th>Status (✔/X/NA)</th></tr></thead><tbody id="v_brakesItems"></tbody></table>
+
+                    <h3>Tyre Condition & Brake Wear Measurements</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th rowspan="2" style="vertical-align: bottom;">Axle</th>
+                                <th colspan="2" style="text-align: center; border-bottom: 1px solid var(--border);">N/S Outer</th>
+                                <th colspan="2" style="text-align: center; border-bottom: 1px solid var(--border);">N/S Inner</th>
+                                <th rowspan="2" style="vertical-align: bottom; text-align: center;">N/S Brake</th>
+                                <th colspan="2" style="text-align: center; border-bottom: 1px solid var(--border);">O/S Inner</th>
+                                <th colspan="2" style="text-align: center; border-bottom: 1px solid var(--border);">O/S Outer</th>
+                                <th rowspan="2" style="vertical-align: bottom; text-align: center;">O/S Brake</th>
+                            </tr>
+                            <tr>
+                                <th style="text-align: center;">mm</th><th style="text-align: center;">PSI</th>
+                                <th style="text-align: center;">mm</th><th style="text-align: center;">PSI</th>
+                                <th style="text-align: center;">mm</th><th style="text-align: center;">PSI</th>
+                                <th style="text-align: center;">mm</th><th style="text-align: center;">PSI</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Axle 1</td>
+                                <td><input type="text" class="matrix-input"></td>
+                                <td><input type="text" class="matrix-input"></td>
+                                <td colspan="2" style="background: #e2e8f0; text-align: center; color: #64748b; font-size: 11px;">Single</td>
+                                <td><input type="text" class="matrix-input" placeholder="%"></td>
+                                <td colspan="2" style="background: #e2e8f0; text-align: center; color: #64748b; font-size: 11px;">Single</td>
+                                <td><input type="text" class="matrix-input"></td>
+                                <td><input type="text" class="matrix-input"></td>
+                                <td><input type="text" class="matrix-input" placeholder="%"></td>
+                            </tr>
+                            <tr>
+                                <td>Axle 2</td>
+                                <td><input type="text" class="matrix-input"></td><td><input type="text" class="matrix-input"></td>
+                                <td><input type="text" class="matrix-input"></td><td><input type="text" class="matrix-input"></td>
+                                <td><input type="text" class="matrix-input" placeholder="%"></td>
+                                <td><input type="text" class="matrix-input"></td><td><input type="text" class="matrix-input"></td>
+                                <td><input type="text" class="matrix-input"></td><td><input type="text" class="matrix-input"></td>
+                                <td><input type="text" class="matrix-input" placeholder="%"></td>
+                            </tr>
+                            <tr>
+                                <td>Axle 3</td>
+                                <td><input type="text" class="matrix-input"></td><td><input type="text" class="matrix-input"></td>
+                                <td><input type="text" class="matrix-input"></td><td><input type="text" class="matrix-input"></td>
+                                <td><input type="text" class="matrix-input" placeholder="%"></td>
+                                <td><input type="text" class="matrix-input"></td><td><input type="text" class="matrix-input"></td>
+                                <td><input type="text" class="matrix-input"></td><td><input type="text" class="matrix-input"></td>
+                                <td><input type="text" class="matrix-input" placeholder="%"></td>
+                            </tr>
+                            <tr>
+                                <td>Axle 4</td>
+                                <td><input type="text" class="matrix-input"></td><td><input type="text" class="matrix-input"></td>
+                                <td><input type="text" class="matrix-input"></td><td><input type="text" class="matrix-input"></td>
+                                <td><input type="text" class="matrix-input" placeholder="%"></td>
+                                <td><input type="text" class="matrix-input"></td><td><input type="text" class="matrix-input"></td>
+                                <td><input type="text" class="matrix-input"></td><td><input type="text" class="matrix-input"></td>
+                                <td><input type="text" class="matrix-input" placeholder="%"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3>Brake Efficiency Assessment</h3>
+                    <div class="grid-3">
+                        <div class="field-group"><label>Service Brake %</label><input type="text"></div>
+                        <div class="field-group"><label>Secondary Brake %</label><input type="text"></div>
+                        <div class="field-group"><label>Parking Brake %</label><input type="text"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="v_step3" class="step-content">
+                <h2>Section 3: Finalize & Sign</h2>
+                <h3>Part 2: Rectification</h3>
+                <p style="font-size: 11px; color: #64748b;">Any items marked 'X' (Fail) in Section 2 will automatically appear below.</p>
+                <table>
+                    <thead><tr><th>Fault Details</th><th>IM No</th><th>Action Taken</th><th>By</th></tr></thead>
+                    <tbody id="v_rectificationBody"></tbody>
+                </table>
+
+                <div class="legal-box">
+                    <p><strong>Operator Declaration:</strong> I consider the above defects have been rectified satisfactorily and the vehicle is now in a safe and roadworthy condition. IT IS ALWAYS THE RESPONSIBILITY OF THE OPERATOR THAT THE VEHICLE IS IN A ROADWORTHY CONDITION BEFORE BEING USED ON THE ROAD.</p>
+                    <div class="grid-3">
+                        <div class="field-group"><label>Inspector Signature</label><input type="text"></div>
+                        <div class="field-group"><label>Position</label><input type="text"></div>
+                        <div class="field-group"><label>Date Completed</label><input type="text"></div>
+                    </div>
+                    <div class="field-group" style="width: 200px; margin-top: 10px;"><label>Digital Tacho Downloaded?</label><select><option value=""></option><option>YES</option><option>NO</option></select></div>
+                </div>
+            </div>
+
+            <div class="nav-footer">
+                <button type="button" class="btn btn-prev" id="v_prevBtn" onclick="changeVehicleStep(-1)" style="display:none;">Previous</button>
+                <button type="button" class="btn btn-action" id="v_genBtn" onclick="window.print()" style="display:none;">Generate Report</button>
+                <button type="button" class="btn btn-action" id="v_blankBtn" onclick="document.getElementById('vehicleWizard').reset(); document.getElementById('v_rectificationBody').innerHTML = ''; window.print();" style="display:none; background:#64748b;">Print Blank</button>
+                <button type="button" class="btn btn-next" id="v_nextBtn" onclick="changeVehicleStep(1)">Next Section</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<div id="trailerApp" style="display: none;">
+    <div class="top-nav">
+        <button class="btn-home" onclick="openHome()">← Back to Dashboard</button>
+    </div>
+
+    <div class="wizard-container">
+        <header style="margin-bottom: 30px;">
+            <h1>JCC Transport Services</h1>
+            <p style="color:#666; margin:0;">Trailer PMI Reporting Tool | VAT: 255979153</p>
+        </header>
+
+        <form id="trailerWizard">
+            <div id="t_step1" class="step-content active">
+                <h2>Section 1: Trailer & Operator Details</h2>
                 
                 <div class="grid-3">
-                    <div class="field-group"><label>Inspector Signature</label><input type="text"></div>
-                    <div class="field-group"><label>Position</label><input type="text"></div>
-                    <div class="field-group"><label>Date Completed</label><input type="text"></div>
+                    <div class="field-group"><label>Operator / Company</label><input type="text"></div>
+                    <div class="field-group"><label>Email Address</label><input type="email" value="chamberlainrakhee@sky.com"></div>
+                    <div class="field-group"><label>Mobile No.</label><input type="text" value="07806609199"></div>
                 </div>
-                <div class="field-group" style="width: 200px; margin-top: 10px;">
-                    <label>Digital Tacho Downloaded?</label>
-                    <select><option value=""></option><option>YES</option><option>NO</option></select>
+
+                <div class="grid-4">
+                    <div class="field-group"><label>Chassis No.</label><input type="text"></div>
+                    <div class="field-group"><label>Make</label><input type="text"></div>
+                    <div class="field-group"><label>Model</label><input type="text"></div>
+                    <div class="field-group"><label>Fleet No.</label><input type="text"></div>
+                </div>
+
+                <div class="grid-4">
+                    <div class="field-group"><label>Body Type</label><input type="text"></div>
+                    <div class="field-group"><label>Hubometer (KM/Miles)</label><input type="text"></div>
+                    <div class="field-group"><label>VIN No.</label><input type="text"></div>
+                    <div class="field-group"><label>ISO Week No.</label><input type="number" id="t_isoWeek" readonly title="Automatically Calculated"></div>
+                </div>
+
+                <div class="grid-3">
+                    <div class="field-group"><label>Location of Inspection</label><input type="text"></div>
+                    <div class="field-group"><label>Date of Inspection</label><input type="date"></div>
+                    <div class="field-group"><label>Last 2 Year Test Date</label><input type="date"></div>
                 </div>
             </div>
-        </div>
 
-        <div class="nav-footer">
-            <button type="button" class="btn btn-prev" id="prevBtn" onclick="changeStep(-1)" style="display:none;">Previous</button>
-            <button type="button" class="btn btn-action" id="genBtn" onclick="window.print()" style="display:none;">Generate Report</button>
-            <button type="button" class="btn btn-action" id="blankBtn" onclick="printBlankForm()" style="display:none; background:#64748b;">Print Blank</button>
-            <button type="button" class="btn btn-next" id="nextBtn" onclick="changeStep(1)">Next Section</button>
-        </div>
-    </form>
+            <div id="t_step2" class="step-content">
+                <h2>Section 2: Trailer Safety Inspection</h2>
+                
+                <div class="tab-nav">
+                    <button type="button" class="tab-btn active" onclick="openTrailerTab(event, 't_tabBrakesAir')">Brakes & Air</button>
+                    <button type="button" class="tab-btn" onclick="openTrailerTab(event, 't_tabLights')">Lights & Markings</button>
+                    <button type="button" class="tab-btn" onclick="openTrailerTab(event, 't_tabChassis')">Chassis & Body</button>
+                    <button type="button" class="tab-btn" onclick="openTrailerTab(event, 't_tabSuspension')">Suspension & Tyres</button>
+                </div>
+
+                <div id="t_tabBrakesAir" class="tab-pane active">
+                    <table>
+                        <thead><tr><th>Item Inspected</th><th>IM No</th><th>Status (✔/X/NA)</th></tr></thead>
+                        <tbody id="t_brakesItems"></tbody>
+                    </table>
+                </div>
+
+                <div id="t_tabLights" class="tab-pane">
+                    <table>
+                        <thead><tr><th>Item Inspected</th><th>IM No</th><th>Status (✔/X/NA)</th></tr></thead>
+                        <tbody id="t_lightsItems"></tbody>
+                    </table>
+                </div>
+
+                <div id="t_tabChassis" class="tab-pane">
+                    <table>
+                        <thead><tr><th>Item Inspected</th><th>IM No</th><th>Status (✔/X/NA)</th></tr></thead>
+                        <tbody id="t_chassisItems"></tbody>
+                    </table>
+                </div>
+
+                <div id="t_tabSuspension" class="tab-pane">
+                    <table>
+                        <thead><tr><th>Item Inspected</th><th>IM No</th><th>Status (✔/X/NA)</th></tr></thead>
+                        <tbody id="t_suspensionItems"></tbody>
+                    </table>
+
+                    <h3>Tyre Condition & Brake Wear Measurements</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Axle</th>
+                                <th>N/S Tread (mm)</th>
+                                <th>N/S PSI</th>
+                                <th>N/S Brake %</th>
+                                <th>N/S Tyre Age</th>
+                                <th>O/S Tread (mm)</th>
+                                <th>O/S PSI</th>
+                                <th>O/S Brake %</th>
+                                <th>O/S Tyre Age</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Axle 1</td>
+                                <td><input type="text" class="matrix-input"></td>
+                                <td><input type="text" class="matrix-input"></td>
+                                <td><input type="text" class="matrix-input" placeholder="%"></td>
+                                <td><input type="text" class="matrix-input" placeholder="WKYR"></td>
+                                <td><input type="text" class="matrix-input"></td>
+                                <td><input type="text" class="matrix-input"></td>
+                                <td><input type="text" class="matrix-input" placeholder="%"></td>
+                                <td><input type="text" class="matrix-input" placeholder="WKYR"></td>
+                            </tr>
+                            <tr>
+                                <td>Axle 2</td>
+                                <td><input type="text" class="matrix-input"></td>
+                                <td><input type="text" class="matrix-input"></td>
+                                <td><input type="text" class="matrix-input" placeholder="%"></td>
+                                <td><input type="text" class="matrix-input" placeholder="WKYR"></td>
+                                <td><input type="text" class="matrix-input"></td>
+                                <td><input type="text" class="matrix-input"></td>
+                                <td><input type="text" class="matrix-input" placeholder="%"></td>
+                                <td><input type="text" class="matrix-input" placeholder="WKYR"></td>
+                            </tr>
+                            <tr>
+                                <td>Axle 3</td>
+                                <td><input type="text" class="matrix-input"></td>
+                                <td><input type="text" class="matrix-input"></td>
+                                <td><input type="text" class="matrix-input" placeholder="%"></td>
+                                <td><input type="text" class="matrix-input" placeholder="WKYR"></td>
+                                <td><input type="text" class="matrix-input"></td>
+                                <td><input type="text" class="matrix-input"></td>
+                                <td><input type="text" class="matrix-input" placeholder="%"></td>
+                                <td><input type="text" class="matrix-input" placeholder="WKYR"></td>
+                            </tr>
+                            <tr>
+                                <td>Axle 4</td>
+                                <td><input type="text" class="matrix-input"></td>
+                                <td><input type="text" class="matrix-input"></td>
+                                <td><input type="text" class="matrix-input" placeholder="%"></td>
+                                <td><input type="text" class="matrix-input" placeholder="WKYR"></td>
+                                <td><input type="text" class="matrix-input"></td>
+                                <td><input type="text" class="matrix-input"></td>
+                                <td><input type="text" class="matrix-input" placeholder="%"></td>
+                                <td><input type="text" class="matrix-input" placeholder="WKYR"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3>Brake Efficiency Assessment</h3>
+                    <div class="grid-3">
+                        <div class="field-group"><label>Service Brake %</label><input type="text"></div>
+                        <div class="field-group"><label>Secondary Brake %</label><input type="text"></div>
+                        <div class="field-group"><label>Parking Brake %</label><input type="text"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="t_step3" class="step-content">
+                <h2>Section 3: Finalize & Sign</h2>
+                
+                <h3>Part 2: Rectification</h3>
+                <p style="font-size: 11px; color: #64748b;">Any items marked 'X' (Fail) in Section 2 will automatically appear below.</p>
+                <table>
+                    <thead><tr><th>Fault Details</th><th>IM No</th><th>Action Taken</th><th>By</th></tr></thead>
+                    <tbody id="t_rectificationBody">
+                        </tbody>
+                </table>
+
+                <div class="legal-box">
+                    <p><strong>Operator Declaration:</strong> I consider the above defects have been rectified satisfactorily and the vehicle is now in a safe and roadworthy condition. IT IS ALWAYS THE RESPONSIBILITY OF THE OPERATOR TO ENSURE THAT THE TRAILER IS IN A ROADWORTHY CONDITION BEFORE BEING USED ON THE ROAD.</p>
+                    
+                    <div class="grid-3">
+                        <div class="field-group"><label>Inspector Name</label><input type="text"></div>
+                        <div class="field-group"><label>Position</label><input type="text"></div>
+                        <div class="field-group"><label>Date Completed</label><input type="text"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-footer">
+                <button type="button" class="btn btn-prev" id="t_prevBtn" onclick="changeTrailerStep(-1)" style="display:none;">Previous</button>
+                <button type="button" class="btn btn-action" id="t_genBtn" onclick="window.print()" style="display:none;">Generate Report</button>
+                <button type="button" class="btn btn-action" id="t_blankBtn" onclick="document.getElementById('trailerWizard').reset(); document.getElementById('t_rectificationBody').innerHTML = ''; window.print();" style="display:none; background:#64748b;">Print Blank</button>
+                <button type="button" class="btn btn-next" id="t_nextBtn" onclick="changeTrailerStep(1)">Next Section</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <script>
-    let currentStep = 1;
+    // --- DASHBOARD NAVIGATION ---
+    function openHome() {
+        document.getElementById('homeMenu').style.display = 'block';
+        document.getElementById('vehicleApp').style.display = 'none';
+        document.getElementById('trailerApp').style.display = 'none';
+    }
+
+    function openApp(appId) {
+        document.getElementById('homeMenu').style.display = 'none';
+        document.getElementById('vehicleApp').style.display = 'none';
+        document.getElementById('trailerApp').style.display = 'none';
+        document.getElementById(appId).style.display = 'block';
+        setISOWeek(); // Recalculate ISO week just in case
+    }
 
     // --- ISO WEEK AUTO-CALCULATION ---
     function setISOWeek() {
@@ -324,81 +569,122 @@
         const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
         const isoWeek = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
         
-        const weekInput = document.getElementById('isoWeek');
-        weekInput.value = isoWeek;
-        // Setting the attribute ensures it isn't cleared if form.reset() is called
-        weekInput.setAttribute('value', isoWeek); 
+        document.getElementById('v_isoWeek').value = isoWeek;
+        document.getElementById('v_isoWeek').setAttribute('value', isoWeek); 
+        document.getElementById('t_isoWeek').value = isoWeek;
+        document.getElementById('t_isoWeek').setAttribute('value', isoWeek); 
     }
-    setISOWeek(); // Run on load
+    setISOWeek();
 
-    function changeStep(n) {
-        document.getElementById(`step${currentStep}`).classList.remove('active');
-        currentStep += n;
-        document.getElementById(`step${currentStep}`).classList.add('active');
+    // ==========================================
+    // VEHICLE APP LOGIC
+    // ==========================================
+    let v_currentStep = 1;
 
-        // Toggle buttons
-        document.getElementById('prevBtn').style.display = currentStep === 1 ? 'none' : 'block';
-        document.getElementById('nextBtn').style.display = currentStep === 3 ? 'none' : 'block';
-        document.getElementById('genBtn').style.display = currentStep === 3 ? 'block' : 'none';
-        document.getElementById('blankBtn').style.display = currentStep === 3 ? 'block' : 'none';
+    function changeVehicleStep(n) {
+        document.getElementById(`v_step${v_currentStep}`).classList.remove('active');
+        v_currentStep += n;
+        document.getElementById(`v_step${v_currentStep}`).classList.add('active');
+
+        document.getElementById('v_prevBtn').style.display = v_currentStep === 1 ? 'none' : 'block';
+        document.getElementById('v_nextBtn').style.display = v_currentStep === 3 ? 'none' : 'block';
+        document.getElementById('v_genBtn').style.display = v_currentStep === 3 ? 'block' : 'none';
+        document.getElementById('v_blankBtn').style.display = v_currentStep === 3 ? 'block' : 'none';
     }
 
-    function openTab(evt, tabName) {
-        let panes = document.getElementsByClassName("tab-pane");
+    function openVehicleTab(evt, tabName) {
+        let panes = document.querySelectorAll("#vehicleApp .tab-pane");
         for (let pane of panes) pane.classList.remove("active");
-        
-        let btns = document.getElementsByClassName("tab-btn");
+        let btns = document.querySelectorAll("#vehicleApp .tab-btn");
         for (let btn of btns) btn.classList.remove("active");
 
         document.getElementById(tabName).classList.add("active");
         evt.currentTarget.classList.add("active");
     }
 
-    function printBlankForm() {
-        document.getElementById('pmiWizard').reset();
-        document.getElementById('rectificationBody').innerHTML = ''; // Clear auto-filled faults
-        window.print();
-    }
-
-    // --- SMART RECTIFICATION LOGIC ---
-    document.getElementById('pmiWizard').addEventListener('change', function(e) {
-        // Only trigger if a radio button was changed
+    document.getElementById('vehicleWizard').addEventListener('change', function(e) {
         if (e.target.type === 'radio') {
             const radioName = e.target.name;
             const value = e.target.value;
-            const rectBody = document.getElementById('rectificationBody');
-            
-            // Look for an existing row for this specific item
-            const existingRow = document.querySelector(`tr[data-source="${radioName}"]`);
+            const rectBody = document.getElementById('v_rectificationBody');
+            const existingRow = document.querySelector(`#v_rectificationBody tr[data-source="${radioName}"]`);
 
             if (value === 'F') {
-                // If marked 'X' (Fail) and row doesn't exist, create it
                 if (!existingRow) {
                     const parentRow = e.target.closest('tr');
-                    const itemName = parentRow.cells[0].innerText;
-                    const imNo = parentRow.cells[1].innerText;
-
                     const newRow = document.createElement('tr');
                     newRow.setAttribute('data-source', radioName);
                     newRow.innerHTML = `
-                        <td><input type="text" style="width:100%" value="${itemName}" readonly title="Auto-filled from Section 2"></td>
-                        <td><input type="text" style="width:50px" value="${imNo}" readonly title="Auto-filled"></td>
+                        <td><input type="text" style="width:100%" value="${parentRow.cells[0].innerText}" readonly></td>
+                        <td><input type="text" style="width:50px" value="${parentRow.cells[1].innerText}" readonly></td>
                         <td><input type="text" style="width:100%" placeholder="Action taken..."></td>
                         <td><input type="text" style="width:80px" placeholder="Initials"></td>
                     `;
                     rectBody.appendChild(newRow);
                 }
             } else {
-                // If changed to Pass or N/A, delete the row from rectification
-                if (existingRow) {
-                    existingRow.remove();
-                }
+                if (existingRow) existingRow.remove();
             }
         }
     });
 
-    // Comprehensive Array Extraction
-    const items = {
+    // ==========================================
+    // TRAILER APP LOGIC 
+    // ==========================================
+    let t_currentStep = 1;
+
+    function changeTrailerStep(n) {
+        document.getElementById(`t_step${t_currentStep}`).classList.remove('active');
+        t_currentStep += n;
+        document.getElementById(`t_step${t_currentStep}`).classList.add('active');
+
+        document.getElementById('t_prevBtn').style.display = t_currentStep === 1 ? 'none' : 'block';
+        document.getElementById('t_nextBtn').style.display = t_currentStep === 3 ? 'none' : 'block';
+        document.getElementById('t_genBtn').style.display = t_currentStep === 3 ? 'block' : 'none';
+        document.getElementById('t_blankBtn').style.display = t_currentStep === 3 ? 'block' : 'none';
+    }
+
+    function openTrailerTab(evt, tabName) {
+        let panes = document.querySelectorAll("#trailerApp .tab-pane");
+        for (let pane of panes) pane.classList.remove("active");
+        let btns = document.querySelectorAll("#trailerApp .tab-btn");
+        for (let btn of btns) btn.classList.remove("active");
+
+        document.getElementById(tabName).classList.add("active");
+        evt.currentTarget.classList.add("active");
+    }
+
+    document.getElementById('trailerWizard').addEventListener('change', function(e) {
+        if (e.target.type === 'radio') {
+            const radioName = e.target.name;
+            const value = e.target.value;
+            const rectBody = document.getElementById('t_rectificationBody');
+            const existingRow = document.querySelector(`#t_rectificationBody tr[data-source="${radioName}"]`);
+
+            if (value === 'F') {
+                if (!existingRow) {
+                    const parentRow = e.target.closest('tr');
+                    const newRow = document.createElement('tr');
+                    newRow.setAttribute('data-source', radioName);
+                    newRow.innerHTML = `
+                        <td><input type="text" style="width:100%" value="${parentRow.cells[0].innerText}" readonly></td>
+                        <td><input type="text" style="width:50px" value="${parentRow.cells[1].innerText}" readonly></td>
+                        <td><input type="text" style="width:100%" placeholder="Action taken..."></td>
+                        <td><input type="text" style="width:80px" placeholder="Initials"></td>
+                    `;
+                    rectBody.appendChild(newRow);
+                }
+            } else {
+                if (existingRow) existingRow.remove();
+            }
+        }
+    });
+
+    // ==========================================
+    // DATA POPULATION
+    // ==========================================
+
+    const vehicleItems = {
         inside: [
             ["DFT plate condition details", "-"], ["Speed limiter plate condition details", "33"],
             ["Seat belts and supplementary restraint systems - condition", "3"], ["Cab floor and steps", "17"],
@@ -460,14 +746,79 @@
         ]
     };
 
+    const trailerItems = {
+        brakes: [
+            ["Brake Systems and Components", "59"],
+            ["Trailer Parking and Emergency Brake and Air Line Connections", "12"],
+            ["Brake actuators and adjusters-security-condition-adjustment-leaks", "59"],
+            ["Service Brake Operation (inc ABS/EBS, ESC & ISO 7638 cable)", "38"],
+            ["Load sensing equipment-security-condition-adjustment-leaks", "59"],
+            ["Parking brake-function-leaks-compliance", "12"],
+            ["Emergency brake-function-leaks-compliance", "12"],
+            ["Operating adaptor (service line)", "12"],
+            ["Hand operated brake control valves - function-condition", "39"],
+            ["Additional braking devices", "58"]
+        ],
+        lights: [
+            ["Markers and reflectors", "62"],
+            ["Rear markings (reflective)-security-condition-position", "62"],
+            ["Conspicuity markings-security-condition-position", "62"],
+            ["Lamps", "63"],
+            ["Front lamps and outline markers", "63"],
+            ["Rear lamps and outline markers", "63"],
+            ["Number plate lamp(s)", "63"],
+            ["Rear fog lamps", "63"],
+            ["Reflectors (front, rear, side)", "62"],
+            ["Direction/hazard indicators", "66"],
+            ["Stop lamps", "63"],
+            ["Reversing lamp(s)", "63"],
+            ["Side marker lamps", "63"],
+            ["Hazard warning signs", "-"],
+            ["Paintwork and livery", "-"],
+            ["Number plate carrier", "-"]
+        ],
+        chassis: [
+            ["DFT Plate position detail", "-"],
+            ["Bumpers-security-condition-dimension", "9"],
+            ["Rear underrun device", "9"],
+            ["Protective sideguards", "9"],
+            ["Spare wheel carrier-security/condition", "10"],
+            ["Vehicle to trailer coupling", "11"],
+            ["Fifth wheel king pin and rubbing plate", "11"],
+            ["Drawbar including attachment condition", "11"],
+            ["Trailer landing legs-condition-security", "13"],
+            ["Condition of Body", "20"],
+            ["Spray Suppression, Wings and Wheel Arches", "14"],
+            ["Security of body containers and crane support legs", "19"],
+            ["Oil leaks extent", "44"],
+            ["Fuel tanks and systems-security-leaks-damage", "45"],
+            ["Condition of Chassis", "41"],
+            ["Electrical wiring, coupling sockets and equipment", "42"]
+        ],
+        suspension: [
+            ["Suspension", "48"],
+            ["Suspension pins bushes", "48"],
+            ["Suspension springs and links-condition", "48"],
+            ["Spring units links and sub-frames-attachment", "48"],
+            ["Shock absorbers (dampers)", "48"],
+            ["Road Wheels and hubs-condition-security", "6"],
+            ["Axles, Stub Axles and Wheel Bearings", "53"],
+            ["Steering mechanisms-wear-security-condition", "54"],
+            ["Transmission", "57"],
+            ["Size and type of tyres", "7"],
+            ["Condition of Tyres", "8"]
+        ]
+    };
+
     function renderItems(data, containerId) {
         const container = document.getElementById(containerId);
+        if(!container) return; 
         data.forEach((item, idx) => {
             const row = `<tr>
                 <td>${item[0]}</td>
                 <td>${item[1]}</td>
                 <td class="status-row">
-                    <label><input type="radio" name="${containerId}_${idx}" value="P"> ✔</label>
+                    <label><input type="radio" name="${containerId}_${idx}" value="P" checked> ✔</label>
                     <label><input type="radio" name="${containerId}_${idx}" value="F"> X</label>
                     <label><input type="radio" name="${containerId}_${idx}" value="NA"> N/A</label>
                 </td>
@@ -476,10 +827,18 @@
         });
     }
 
-    renderItems(items.inside, 'insideCabItems');
-    renderItems(items.engine, 'engineItems');
-    renderItems(items.external, 'externalItems');
-    renderItems(items.brakes, 'brakesItems');
+    // Populate Vehicle App
+    renderItems(vehicleItems.inside, 'v_insideCabItems');
+    renderItems(vehicleItems.engine, 'v_engineItems');
+    renderItems(vehicleItems.external, 'v_externalItems');
+    renderItems(vehicleItems.brakes, 'v_brakesItems');
+
+    // Populate Trailer App 
+    renderItems(trailerItems.brakes, 't_brakesItems');
+    renderItems(trailerItems.lights, 't_lightsItems');
+    renderItems(trailerItems.chassis, 't_chassisItems');
+    renderItems(trailerItems.suspension, 't_suspensionItems');
+
 </script>
 
 </body>
